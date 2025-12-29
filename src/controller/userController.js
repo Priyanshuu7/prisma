@@ -49,12 +49,13 @@ export const showUsers = async (req, res) => {
       select: {
         id: true,
         name: true,
-        email: true
+        email: true,
+        posts: true,
       }
     });
 
     res.status(200).json({
-      data: users,
+      User: users,
       message: "Users fetched successfully"
     });
 
