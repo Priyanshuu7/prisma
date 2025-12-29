@@ -46,11 +46,14 @@ export const createUser = async (req, res) => {
 export const showUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        posts: true,
+      select:{
+        name:true,
+        _count:{
+          select:{
+            posts:true,
+            comments:true
+          }
+        }
       }
     });
 
@@ -63,6 +66,49 @@ export const showUsers = async (req, res) => {
     console.error(error);
     res.status(500).json({
       message: "Failed to fetch users"
+    });
+  }
+};
+
+
+
+// show user by id
+export const userbyId = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ message: "Invalid user id" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        _count: {
+          select: {
+            posts: true,
+            comments: true
+          }
+        }
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      data: user,
+      message: "User fetched successfully"
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to fetch user"
     });
   }
 };
