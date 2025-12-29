@@ -13,5 +13,29 @@ model User {
   email     String  @unique
   password  String
   createdAt DateTime @default(now())
+  posts     Post[]
+  comments  Comment[]
 }
 
+model Post {
+  int           Int     @id @default(autoincrement())
+  title         String
+  desc          String
+  user_id       Int
+  user          User    @relation(fields: [user_id], references: [id] , onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  comment_count Int     @default(0)
+  comments      Comment[]
+  
+}
+
+model Comment {
+  id        String @id @default(uuid())
+  post      Post   @relation(fields: [postId], references: [int] , onDelete: Cascade)
+  postId    Int
+  user_id    Int
+  user      User   @relation(fields: [user_id], references: [id] , onDelete: Cascade)
+  content    String
+  createdAt DateTime @default(now())
+
+}
