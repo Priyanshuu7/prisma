@@ -46,12 +46,12 @@ export const createUser = async (req, res) => {
 export const showUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
-      select:{
-        name:true,
-        _count:{
-          select:{
-            posts:true,
-            comments:true
+      select: {
+        name: true,
+        _count: {
+          select: {
+            posts: true,
+            comments: true
           }
         }
       }
@@ -81,7 +81,7 @@ export const userbyId = async (req, res) => {
       return res.status(400).json({ message: "Invalid user id" });
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findMany({
       where: { id },
       select: {
         id: true,
@@ -147,33 +147,34 @@ export const deleteUser = async (req, res) => {
 
 // update user 
 
-export const updateUser = async (req,res) => {
-    try {
-        const userId = parseInt(req.params.id, 10);
-        if (!Number.isInteger(userId)) {
-            return res.status(400).json({ message: "Invalid user id" });
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { id: userId }
-        });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const updatedUser = await prisma.user.update({
-            where: { id: userId },
-            data: {
-                name: req.body.name,
-                email: req.body.email,            }
-        });
-        res.status(200).json({
-            data: updatedUser,
-            message: "User updated successfully"
-        });
-
+export const updateUser = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+    if (!Number.isInteger(userId)) {
+      return res.status(400).json({ message: "Invalid user id" });
     }
-    catch (error) {
-        
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name: req.body.name,
+        email: req.body.email,
+      }
+    });
+    res.status(200).json({
+      data: updatedUser,
+      message: "User updated successfully"
+    });
+
+  }
+  catch (error) {
+
+  }
 }
